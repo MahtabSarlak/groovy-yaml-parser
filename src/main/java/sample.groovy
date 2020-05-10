@@ -1,31 +1,25 @@
-/*@GrabConfig(systemClassLoader=true)
-@Grab(group='org.postgresql', module='postgresql', version='9.4-1205-jdbc42')*/
-
 import groovy.yaml.YamlSlurper
-import org.yaml.snakeyaml.Yaml
 import groovy.json.JsonOutput;
 import groovy.sql.Sql
 
 
 
 class GroovyTest{
+
+    static def dbUrl      = "jdbc:postgresql://localhost/dbtest"
+    static def dbUser     = "testuser"
+    static def dbPassword = "test"
+    static def dbDriver   = "org.postgresql.Driver"
+
     static void main(args){
-
-        def dbUrl      = "jdbc:postgresql://localhost/dbtest"
-        def dbUser     = "testuser"
-        def dbPassword = "test"
-        def dbDriver   = "org.postgresql.Driver"
-
+// -------------------------------- sql configuration -----------------------------------------
         def sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
-        sql.execute("DROP TABLE IF EXISTS PROJECT;")
-        sql.execute "create table PROJECT (ID serial PRIMARY KEY, URL VARCHAR (100))"
+        sql.execute("DROP TABLE IF EXISTS PATHS;")
+        sql.execute "create table PATHS (ID serial PRIMARY KEY, URL VARCHAR (100))"
         sql.execute("DROP TABLE IF EXISTS MODEL;")
         sql.execute "create table MODEL (ID serial PRIMARY KEY, name VARCHAR (100))"
-       /* def ids = sql.executeInsert """
-  INSERT INTO PROJECT (NAME, URL) VALUES ('tutorials', 'github.com/eugenp/tutorials')
-"""*/
 
-        //println(ids)
+//------------------------------ yaml reader---------------------------------------------------
 
         yamlFile.withReader { reader ->
             def yaml = new YamlSlurper().parse(reader)
@@ -36,7 +30,7 @@ class GroovyTest{
             println("models to json")
             for (model in models)
             {
-                def t = sql.executeInsert (" INSERT INTO MODEL ( name) VALUES (?) " , [model.key]);
+               sql.executeInsert (" INSERT INTO MODEL ( name) VALUES (?) " , [model.key]);
 
                 def model_json = JsonOutput.toJson(model)
                 println JsonOutput.prettyPrint(model_json)
@@ -47,7 +41,7 @@ class GroovyTest{
             {
                 println(path.key)
 
-               def t = sql.executeInsert (" INSERT INTO PROJECT ( URL) VALUES (?) " , [path.key]);
+               sql.executeInsert (" INSERT INTO PATHS ( URL) VALUES (?) " , [path.key]);
 
                 def path_json = JsonOutput.toJson(path)
                 println JsonOutput.prettyPrint(path_json)
@@ -55,7 +49,7 @@ class GroovyTest{
             sql.close()
         }
     }
-    static def yamlFile = new File("example.yaml")
+    static def yamlFile = new File("example.yml")
 
 }
 
