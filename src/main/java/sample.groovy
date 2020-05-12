@@ -60,6 +60,19 @@ class GroovyTest {
                         " path_id    integer   NOT NULL," +
                         " CONSTRAINT PK_api PRIMARY KEY (api_id)," +
                         " CONSTRAINT FK_44 FOREIGN KEY (path_id) REFERENCES path (path_id));")
+        sql.execute("DROP TABLE IF EXISTS parameters ;")
+        sql.execute(
+                "CREATE TABLE parameters (" +
+                        " parameters_id serial NOT NULL," +
+                        " name   varchar(50) NULL," +
+                        " in_value        varchar(100) NULL," +
+                        " description  varchar(200) NULL," +
+                        " required varchar(50) NULL," +
+                        " type     varchar(50) NULL," +
+                        " format     varchar(50) NULL," +
+                        " api_id    integer   NOT NULL," +
+                        " CONSTRAINT PK_parameters PRIMARY KEY (parameters_id)," +
+                        " CONSTRAINT FK_34 FOREIGN KEY (api_id) REFERENCES api (api_id));")
 
     }
 // parse path data
